@@ -11,22 +11,23 @@ const mapDispatchToProps = (dispatch) => ({
 
 class Details extends React.Component {
   componentDidMount = () => {
-    if (!this.props.job.title) {
+    if (!this.props.jobs.job.hasOwnProperty("title")) {
       this.props.showError();
     }
   };
   render() {
+    const job = this.props.jobs.job;
     return (
       <Container className="mt-5">
-        {!this.props.job.title ? (
+        {!job.hasOwnProperty("title") ? (
           <Alert variant="danger">{this.props.error}</Alert>
         ) : (
           <>
             <div className="border-top border-dark">
               <h6 className="mt-4" style={{ color: "#abacab" }}>
-                {this.props.job.type} / {this.props.job.location}
+                {job.type} / {job.location}
               </h6>
-              <h2>{this.props.job.title}</h2>
+              <h2>{job.title}</h2>
             </div>
             <hr />
             <Row className="mt-4">
@@ -36,27 +37,25 @@ class Details extends React.Component {
                 <div
                   className="descriptionP"
                   dangerouslySetInnerHTML={{
-                    __html: this.props.job.description,
+                    __html: job.description,
                   }}
                 ></div>
 
                 <h4 className="mt-4">How To Apply</h4>
                 <p
                   dangerouslySetInnerHTML={{
-                    __html: this.props.job.how_to_apply,
+                    __html: job.how_to_apply,
                   }}
                 ></p>
               </Col>
               <Col md={4}>
                 <Card style={{ background: "#eeeeee" }}>
-                  <Card.Img variant="top" src={this.props.job.company_logo} />
+                  <Card.Img variant="top" src={job.company_logo} />
                   <Card.Body>
-                    <Card.Title>
-                      Company Name: {this.props.job.company}
-                    </Card.Title>
-                    {this.props.job.company_url && (
-                      <a target="_blank" href={this.props.job.company_url}>
-                        {this.props.job.company_url}
+                    <Card.Title>Company Name: {job.company}</Card.Title>
+                    {job.company_url && (
+                      <a target="_blank" href={job.company_url}>
+                        {job.company_url}
                       </a>
                     )}
                   </Card.Body>

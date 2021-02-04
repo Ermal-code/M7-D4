@@ -1,20 +1,42 @@
 import React from "react";
 import { Form, Col, Container, Button, Spinner } from "react-bootstrap";
 import ShowJobs from "./ShowJobs";
+import { connect } from "react-redux";
+
+const mapStateToProps = (state) => state;
+
+const mapDispatchToProps = (dispatch) => ({
+  getJobsWithThunk: (url) => {
+    dispatch(async (dispatch, getState) => {
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (response.ok) {
+          dispatch({
+            type: "GET_JOBS",
+            payload: data,
+          });
+        } else {
+          dispatch({
+            type: "SET_ERROR",
+            payload: "Something went wrong",
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    });
+  },
+});
 
 class Home extends React.Component {
   state = {
     loading: false,
-    data: [],
     addSearchOptions: {
       description: "backend",
       location: "berlin",
     },
-    showPopover: false,
-  };
-
-  popOverToggle = () => {
-    this.setState({ showPopover: !this.state.showPopover });
   };
 
   updateCommentField = (e) => {
@@ -28,39 +50,22 @@ class Home extends React.Component {
 
   fetchJobs = async (e) => {
     e.preventDefault();
-    try {
-      this.setState({ loading: true });
-      let url = `/positions.json?description=${this.state.addSearchOptions.description}&location=${this.state.addSearchOptions.location}`;
+    this.setState({ loading: true });
+    let url = `/positions.json?description=${this.state.addSearchOptions.description}&location=${this.state.addSearchOptions.location}`;
+    await this.props.getJobsWithThunk(url);
 
-      let response = await fetch(url);
-      let data = await response.json();
-
-      this.setState({ data });
-      if (response.ok) {
-        this.setState({
-          ...this.state,
-          addSearchOptions: {
-            description: "",
-            location: "",
-          },
-          loading: false,
-        });
-      } else {
-        this.setState({
-          ...this.state,
-          addSearchOptions: {
-            description: "",
-            location: "",
-          },
-          loading: false,
-        });
-      }
-    } catch (error) {
-      console.log(error);
-    }
+    this.setState({
+      ...this.state,
+      addSearchOptions: {
+        description: "",
+        location: "",
+      },
+      loading: false,
+    });
   };
 
   render() {
+    const jobs = this.props.jobs.arrJobs || [];
     return (
       <>
         <Container className="my-5">
@@ -103,9 +108,7 @@ class Home extends React.Component {
               <Spinner animation="border" variant="primary" />
             </div>
           ) : (
-            this.state.data.length > 0 && (
-              <ShowJobs jobs={this.state.data} history={this.props.history} />
-            )
+            jobs.length > 0 && <ShowJobs history={this.props.history} />
           )}
         </Container>
       </>
@@ -113,4 +116,4 @@ class Home extends React.Component {
   }
 }
 
-export default Home;
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
