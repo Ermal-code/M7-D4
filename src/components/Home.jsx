@@ -6,22 +6,24 @@ import { connect } from "react-redux";
 const mapStateToProps = (state) => state;
 
 const mapDispatchToProps = (dispatch) => ({
-  getJobsWithThunk: (url) => {
+  getJobsWithThunk: (url, setState) => {
     dispatch(async (dispatch, getState) => {
       try {
         const response = await fetch(url);
         const data = await response.json();
-
+        console.log(data);
         if (response.ok) {
           dispatch({
             type: "GET_JOBS",
             payload: data,
           });
+          setState();
         } else {
           dispatch({
             type: "SET_ERROR",
             payload: "Something went wrong",
           });
+          setState();
         }
       } catch (error) {
         console.log(error);
@@ -52,16 +54,17 @@ class Home extends React.Component {
     e.preventDefault();
     this.setState({ loading: true });
     let url = `/positions.json?description=${this.state.addSearchOptions.description}&location=${this.state.addSearchOptions.location}`;
-    await this.props.getJobsWithThunk(url);
-
-    this.setState({
-      ...this.state,
-      addSearchOptions: {
-        description: "",
-        location: "",
-      },
-      loading: false,
-    });
+    const set = () => {
+      this.setState({
+        ...this.state,
+        addSearchOptions: {
+          description: "",
+          location: "",
+        },
+        loading: false,
+      });
+    };
+    await this.props.getJobsWithThunk(url, set);
   };
 
   render() {
