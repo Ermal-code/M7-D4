@@ -11,7 +11,7 @@ const mapDispatchToProps = (dispatch) => ({
       try {
         const response = await fetch(url);
         const data = await response.json();
-        console.log(data);
+
         if (response.ok) {
           dispatch({
             type: "GET_JOBS",
@@ -36,8 +36,8 @@ class Home extends React.Component {
   state = {
     loading: false,
     addSearchOptions: {
-      description: "backend",
-      location: "berlin",
+      description: "",
+      location: "",
     },
   };
 

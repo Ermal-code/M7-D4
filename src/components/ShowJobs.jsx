@@ -9,7 +9,7 @@ class ShowJobs extends React.Component {
     const jobs = this.props.jobs.arrJobs;
     return (
       <div className="mt-4 border-top border-secondary">
-        <h2 className="my-3">Showing {this.props.jobs.length} jobs</h2>
+        <h2 className="my-3">Showing {jobs.length} jobs</h2>
         <hr />
         {jobs &&
           jobs.map((job, index) => (
